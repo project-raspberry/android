@@ -1,24 +1,24 @@
+# [WARNING] This is a W.I.P. Do not build until this disclaimer is removed!
+
 <p align="center">
-<img src="https://github.com/RisingTechOSS/android/blob/fifteen/risingOS_banner.png">
+<img src="https://github.com/project-raspberry/.github/raw/master/profile/banner.png">
 </p>
 
-What is RisingOS?
----------------
-risingOS is a OpenSource Aftermarket Android Operating System that aims to bring unique and fresh user experience.
+# Project Raspberry manifest
 
 Base Firmware
 ---------------
-[**LineageOS Android**](https://github.com/LineageOS)
+[**risingOS Android**](https://github.com/RisingTechOSS)
 
 Maintainership
 ---------------
-We're short in manpower right now (core members are busy with maintaining source and can't review applicants). Maintainership is closed until source workload is low.
+If you want to apply for maintainership, send a PM on Telegram to @sapphiremyass.
  
 Getting Started
 ---------------
 **Initialize local repository**
 ```bash
-repo init -u https://github.com/RisingTechOSS/android -b fifteen --git-lfs
+repo init -u https://github.com/project-raspberry/android -b fifteen --git-lfs
 ```
 
 **Sync up with this command:**
@@ -27,7 +27,7 @@ repo sync -c --no-clone-bundle --optimized-fetch --prune --force-sync -j$(nproc 
 ```
 
 ```bash
-# For gms or chromium blobs related errors due to git lfs (gitlab now limits files up to 100mb max) (credits to haggertk):
+# For GMS or Cromium blobs related errors due to Git LFS (credits to haggertk):
 sudo apt install git-lfs
 git lfs install
 
@@ -35,16 +35,16 @@ rm -rf vendor/gms
 rm -rf .repo/projects/vendor/gms.git
 rm -rf .repo/project-objects/*/android_vendor_gms.git
 
-repo init -u https://github.com/RisingTechOSS/android -b fifteen --git-lfs
+repo init -u https://github.com/project-raspberry/android -b fifteen --git-lfs
 
 # for SSH
-repo init -u git@github.com:RisingTechOSS/android.git -b fifteen --git-lfs 
+repo init -u git@github.com:project-raspberry/android.git -b fifteen --git-lfs 
 
 ```
 
-Preparing device for building risingOS
+Preparing device for building Project Raspberry
 ---------------
-**Inherit LineageOS Vendor stuffs**
+**Inherit LineageOS vendor stuffs**
 ```bash
 $(call inherit-product, vendor/lineage/config/common_full_phone.mk)
 ```
@@ -53,9 +53,9 @@ Building Flags
 ---------------
 ```bash
 # friendly tip: builders can use vendor init_xxx.cpp as workaround for spacing
-# e.g. property_override("ro.rising.chipset", "Snapdragon 870 5G");
+# e.g. property_override("ro.raspberry.chipset", "Snapdragon 870 5G");
 # friendly tip: builders can use vendor init_xxx.cpp as workaround for spacing
-# e.g. property_override("ro.rising.maintainer", "maintainer");
+# e.g. property_override("ro.raspberry.maintainer", "maintainer");
 
 # Chipset and Maintainer Prop
 #In lineage_<device>.mk Add the following properties to `PRODUCT_BUILD_PROP_OVERRIDES`
@@ -63,18 +63,18 @@ Building Flags
 Add the following variables:
 
 # Lunch banner maintainer variable
-RISING_MAINTAINER="Niv"
+RASPBERRY_MAINTAINER="Niv"
 
-# Chipset/Maintainer properties (ro.rising.chipset/ro.rising.maintainer) 
+# Chipset/Maintainer properties (ro.raspberry.chipset/ro.raspberry.maintainer) 
 # (Optional if builder is setting properties via init_<device>.cpp)
 PRODUCT_BUILD_PROP_OVERRIDES += \
-    RisingChipset="Google Tensor 2" \
-    RisingMaintainer="Niv"
+    RaspberryChipset="Google Tensor 2" \
+    RaspberryMaintainer="Niv"
 
 # chipset flag enclose var with "" if more than one
 # this will reflect on build/display version, a firmware package/zip name 
-# e.g. risingOS-6.0-COMMUNITY-device-AOSP.zip - AOSP is the default package type, WITH_GMS will override the package type to PIXEL
-RISING_PACKAGE_TYPE := "VANILLA_AOSP"
+# e.g. Project-Raspberry-15-UNOFFICIAL-device-AOSP.zip - AOSP is the default package type, WITH_GMS will override the package type to PIXEL
+RASPBERRY_PACKAGE_TYPE := "VANILLA_AOSP"
 
 # disable/enable blur support, default is false
 TARGET_ENABLE_BLUR := true/false
@@ -122,7 +122,7 @@ TARGET_CORE_GMS_EXTRAS := true/false
 TARGET_DEFAULT_PIXEL_LAUNCHER := true/false 
 
 # Android System Intelligence (Pixels devices)
-It is recommended for Builders to drop other versions of DevicePersonalization except for DevicePersonalization2020 to avoid breakages on pixel features like Live Captions/NGA etc.
+It is recommended for Builders to drop other versions of DevicePersonalization except for DevicePersonalization2020 to avoid breakages on Pixel features like Live Captions/NGA etc.
 ```
 
 Building the firmware
@@ -131,25 +131,16 @@ Building the firmware
 ```bash
 . build/envsetup.sh
 ```
-**riseup uses all available cores to assign jobs hence making -jX no-op, to utilize -jX use:**
 ```bash
-riseup <device> <build-type> 
+lunch lineage_codename-buildtype
 ```
 ```bash
-rise b
-```
-
-**Building fastboot update package**
-```bash
-riseup <device> <build-type> 
-```
-```bash
-rise fb
+mka bacon -j$(nproc --all)
 ```
 
-**Signed build(Replacing testkey with releasekey for play integrity, certification etc.)**
+**Signed build (Replacing testkey with releasekey for Play Integrity, certification etc.)**
 ```bash
-riseup <device> <build-type> 
+lunch lineage_codename-buildtype
 ```
 ```bash
 # Perform manual key generation
@@ -160,42 +151,17 @@ gk -s
 # For more info about gk (generate keys)
 gk -h/--help
 
-# Build the firmware with the preferred method except for 'rise sb'
-rise/rise b/mka bacon etc.
-```
-
-**Building fully signed ota package**
-```bash
-riseup <device> <build-type> 
-```
-```bash
-# 'rise sb' is an attempt to automate LineageOS builds signing.
-# Reference: https://wiki.lineageos.org/signing_builds
-# In case of errors or any other difficulties, avoid using 'rise sb'
-# If the builder wants to simply replace the testkey certificate with the releasekey
-# Please refer to 'Replacing testkey with releasekey'
-# (Automatic generation of keys will be performed if keys do not exist).
-# For manual key generation, please use "gk":
-gk -f (to regenerate replace old keys, rise sb automatically generate keys for full build signing if no keys exists)
-rise sb
+# Build the firmware
+mka bacon -j$(nproc --all)
 ```
 
 **Opting out of signed builds**
 ```bash
-riseup <device> <build-type> 
+lunch lineage_codename-buildtype
 ```
 ```bash
 remove_keys # This will remove generated keys so the system will revert back to test keys.
 ```
-
-**For more information about the rise build command:**
-```bash
-rise help
-```
-
-Bug Reports/Issue Tracker
----------------
-[**Issue Tracker**](https://github.com/RisingTechOSS/issue_tracker)
 
 Contributions/Translations
 ---------------
@@ -203,9 +169,9 @@ Contributions/Translations are always welcome! Please feel free to do pull reque
 
 Pull requests will be reviewed by source maintainers and will be merged/added to work-in-progress repositories once changes are verified.
 
-
 Credits
 ---------------
+* [**risingOS**](https://github.com/RisingTechOSS)
 * [**AOSPA**](https://github.com/AOSPA)
 * [**AICP**](https://github.com/AICP)
 * [**Bootleggers**](https://github.com/BootleggersROM)
